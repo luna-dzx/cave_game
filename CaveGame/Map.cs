@@ -62,15 +62,14 @@ namespace ThisIsTheActualProjectIPromise
             cam.Draw(spriteBatch,_textures[(int)block.BlockType],blockPos,Vector2.One, Color.White);
         }
 
-        
+        //mines a block TODO: make better :)
         public void Mine(Vector2 blockPos)
         {
             _blocks[(int)MathF.Floor(blockPos.X),(int)MathF.Floor(blockPos.Y)].BlockType = BlockType.Wall;
         }
 
-        /*public Physics[] GetPhysics()
-        {
-
-        }*/
+	//returns physics objects of all blocks that can be collided with, within a given range
+	//public Physics[] GetPhysicsInRange(){
+		
     }
 }
