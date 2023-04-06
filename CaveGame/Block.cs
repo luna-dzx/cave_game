@@ -22,7 +22,7 @@ namespace ThisIsTheActualProjectIPromise
         {
             BlockType = block;
             Health = 100;
-            //blorf
+            
         }
     }
 

@@ -28,11 +28,11 @@ namespace ThisIsTheActualProjectIPromise
         protected override void Initialize()
         {
             Texture2D[] textures = {
-                Content.Load<Texture2D>("sky"),
-                Content.Load<Texture2D>("stone")
+                Content.Load<Texture2D>("stonebgtxt"),
+                Content.Load<Texture2D>("stonetxt")
             };
             _map = new Map(textures, 400, 400, 5.0f);
-            _player = new Player(new Vector2(2, 1), new Vector2(0.75f, 1.69f), Content.Load<Texture2D>("ballsoodman"));
+            _player = new Player(new Vector2(2, 1), new Vector2(0.75f, 1.69f), Content.Load<Texture2D>("MycJoe1"));
             _cam = new Camera(new Vector2(50, 50), new Vector2(800, 600), _player.physics.Position, 3.5f);
 
             base.Initialize();
@@ -41,7 +41,6 @@ namespace ThisIsTheActualProjectIPromise
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _background = Content.Load<Texture2D>("ballsoodman");
         }
 
         protected override void Update(GameTime gameTime)
@@ -94,7 +93,7 @@ namespace ThisIsTheActualProjectIPromise
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin(samplerState: SamplerState.PointWrap);
 
             _map.Draw(_spriteBatch, _cam);
