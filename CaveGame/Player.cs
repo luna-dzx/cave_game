@@ -26,15 +26,7 @@ namespace ThisIsTheActualProjectIPromise
 
         public void Draw(SpriteBatch spriteBatch, Camera cam)
         {
-            if (physics.Contains(Vector2.One))
-            {
-                cam.Draw(spriteBatch, _texture, physics.Position, physics.Size, Color.Red);
-            }
-            else
-            {
-                cam.Draw(spriteBatch, _texture, physics.Position, physics.Size, Color.White);
-            }
-
+            cam.Draw(spriteBatch, _texture, physics.Position, physics.Size, Color.White);
         }
     }
 }
