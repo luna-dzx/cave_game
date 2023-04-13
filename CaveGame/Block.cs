@@ -9,8 +9,9 @@ namespace ThisIsTheActualProjectIPromise
 {
     public enum BlockType
     {
-        Wall,
-        Stone,
+        Wall = 0,
+        Stone = 1,
+        Nigel = 2,
     };
     
     struct Block

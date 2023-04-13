@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
@@ -10,6 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />

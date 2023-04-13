@@ -29,7 +29,7 @@ namespace ThisIsTheActualProjectIPromise
 
         public void Update(GameTime gameTime, Physics[] testSubjects, Vector2 testRes)
         {
-            TestCollide(testSubjects, testRes);
+            TestCollide(testSubjects, testRes, Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
             
             //add pos to velocity
             Position += Velocity* (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -47,26 +47,29 @@ namespace ThisIsTheActualProjectIPromise
         }
 
         //tests if colliding with a point, if so, moves accordingly
-        public void TestCollide(Physics[] testSubjects, Vector2 testRes)
+        public void TestCollide(Physics[] testSubjects, Vector2 testRes, Vector2 velocity)
         {
             int topCollisions = 0;
             int bottomCollisions = 0;
             int leftCollisions = 0;
             int rightCollisions = 0;
 
+
+            Vector2 position = Position + velocity;
+
             //x value testing sweep
             for (int testStep = 0; testStep < (int) testRes.X; testStep++)
             {
                 //interpolate num of points between pos and opp pos using res
-                float xTestValue = lerp(Position.X, Position.X + Size.X, (float)testStep / testRes.X);
+                float xTestValue = lerp(position.X, position.X + Size.X, (float)testStep / testRes.X);
                 foreach(Physics testSubject in testSubjects)
                 {
-                    if (testSubject.Contains(new Vector2 (xTestValue,Position.Y)))
+                    if (testSubject.Contains(new Vector2 (xTestValue, position.Y)))
                     {
                         topCollisions++;
                     }
                     
-                    if (testSubject.Contains(new Vector2(xTestValue, Position.Y + Size.Y)))
+                    if (testSubject.Contains(new Vector2(xTestValue, position.Y + Size.Y)))
                     {
                         bottomCollisions++;
                     }
@@ -78,33 +81,35 @@ namespace ThisIsTheActualProjectIPromise
             for (int testStep = 0; testStep < (int)testRes.Y; testStep++)
             {
                 //interpolate num of points between pos and opp pos using res
-                float yTestValue = lerp(Position.Y, Position.Y + Size.Y, (float)testStep / testRes.Y);
+                float yTestValue = lerp(position.Y, position.Y + Size.Y, (float)testStep / testRes.Y);
                 foreach (Physics testSubject in testSubjects)
                 {
-                    if (testSubject.Contains(new Vector2(Position.X, yTestValue)))
+                    if (testSubject.Contains(new Vector2(position.X, yTestValue)))
                     {
                         leftCollisions++;
                     }
 
-                    if (testSubject.Contains(new Vector2(Position.X + Size.X, yTestValue)))
+                    if (testSubject.Contains(new Vector2(position.X + Size.X, yTestValue)))
                     {
                         rightCollisions++;
                     }
                 }
             }
-            if (Velocity.X < 0.0 && leftCollisions > 1)
+
+            if (Velocity.X < 0.0 && leftCollisions > 0)
             {
                 Velocity.X = 0;
             }
-            if (Velocity.X > 0.0 && rightCollisions > 1)
+            if (Velocity.X > 0.0 && rightCollisions > 0)
             {
                 Velocity.X = 0;
+                Console.WriteLine("bruh");
             }
-            if (Velocity.Y < 0.0 && topCollisions > 1)
+            if (Velocity.Y < 0.0 && topCollisions > 0)
             {
                 Velocity.Y = 0;
             }
-            if (Velocity.Y > 0.0 && bottomCollisions > 1)
+            if (Velocity.Y > 0.0 && bottomCollisions > 0)
             {
                 Velocity.Y = 0;
             }

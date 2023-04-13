@@ -17,6 +17,9 @@ namespace ThisIsTheActualProjectIPromise
         private Map _map;
         private Player _player;
 
+        const int MapWidth = 30;
+        const int MapHeight = 30;
+
 
         public Game1()
         {
@@ -29,10 +32,11 @@ namespace ThisIsTheActualProjectIPromise
         {
             Texture2D[] textures = {
                 Content.Load<Texture2D>("stonebgtxt"),
-                Content.Load<Texture2D>("stonetxt")
+                Content.Load<Texture2D>("stonetxt"),
+                Content.Load<Texture2D>("nigel")
             };
-            _map = new Map(textures, 400, 400, 5.0f);
-            _player = new Player(new Vector2(2, 1), new Vector2(0.75f, 1.69f), Content.Load<Texture2D>("MycJoe1"));
+            _map = new Map(textures, MapWidth, MapHeight, 5.0f);
+            _player = new Player(GraphicsDevice, new Vector2(2, 1), new Vector2(0.75f, 1.69f), Content.Load<Texture2D>("MycJoe1"), 5f);
             _cam = new Camera(new Vector2(50, 50), new Vector2(800, 600), _player.physics.Position, 3.5f);
 
             base.Initialize();
@@ -52,40 +56,49 @@ namespace ThisIsTheActualProjectIPromise
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            Vector2 tempVelocity = Vector2.Zero;
+
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                _player.physics.Velocity += new Vector2(0, -0.5f) * seconds;
+                tempVelocity += new Vector2(0, -1f);
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                _player.physics.Velocity += new Vector2(0, 0.5f) * seconds;
+                tempVelocity += new Vector2(0, 1f);
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                _player.physics.Velocity += new Vector2(-0.5f, 0) * seconds;
+                tempVelocity += new Vector2(-1f, 0);
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                _player.physics.Velocity += new Vector2(0.5f, 0) * seconds;
+                tempVelocity += new Vector2(1f, 0);
             }
 
-            if (keyboardState.IsKeyDown(Keys.Space))
-            {
-                _player.physics.Velocity += new Vector2(0.0f, -15.0f) * seconds;
-            }
+            float velocityLength = tempVelocity.Length();
+            if (velocityLength > 0f) tempVelocity /= velocityLength;
+            _player.physics.Velocity = _player.Speed * tempVelocity;
+
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 Point mousePos = mouseState.Position;
+                
                 Console.WriteLine("click coords:{0}, block {1} clicked", mousePos, _cam.ScreenToGameUnits(mousePos.ToVector2()));
-                _map.Mine(_cam.ScreenToGameUnits(mousePos.ToVector2()));
+                Vector2 mined = _map.Mine(_cam.ScreenToGameUnits(mousePos.ToVector2()));
+                if (mined.Y > 0)
+                {
+                    _player.SpawnOrb(mined);
+                }
             }
 
             Physics[] surroundings = _map.GetPhysicsInRange(_player.physics.Position, _player.physics.Position + _player.physics.Size);
             _player.Update(gameTime, surroundings);
 
             _cam._target = _player.physics.Position + _player.physics.Size / 2;
-            _cam.Update(gameTime);
+            _cam.Update(gameTime, MapWidth);
+
+            _map.GenerateRows(_player.physics.Position, _cam);
 
 
             base.Update(gameTime);
@@ -94,11 +107,11 @@ namespace ThisIsTheActualProjectIPromise
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            _spriteBatch.Begin(samplerState: SamplerState.PointWrap);
+            _spriteBatch.Begin(samplerState: SamplerState.PointWrap, blendState: BlendState.AlphaBlend, sortMode: SpriteSortMode.Immediate);
 
             _map.Draw(_spriteBatch, _cam);
 
-            _player.Draw(_spriteBatch, _cam);
+            _player.Draw(_spriteBatch, _cam, gameTime);
 
             _spriteBatch.End();
 
