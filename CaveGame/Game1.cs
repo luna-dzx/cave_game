@@ -16,7 +16,11 @@ public class Game1 : Game
     private TitleScreen _titleScreen;
     private CaveGame _caveGame;
 
+    // values for communicating between states
+    public static bool InitializeCaveGame;
     public static bool ResetCaveGame;
+    public static Vector2 LoadedPosition;
+    public static long LoadedSeed;
 
     public Game1()
     {
@@ -30,7 +34,8 @@ public class Game1 : Game
         _gameStates = new Dictionary<string, GameState>();
         _gameStates.Add("title", new TitleScreen());
         _gameStates.Add("game", new CaveGame());
-
+        _gameStates.Add("pause", new PauseMenu());
+        
         base.Initialize();
     }
 

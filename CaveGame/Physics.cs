@@ -22,10 +22,10 @@ public class Physics
         Gravity = false;
     }
 
-    public void Update(GameTime gameTime, Physics[] testSubjects, Vector2 testRes, int mapWidth)
+    public void Update(GameTime gameTime, Physics[] testSubjects, int mapWidth)
     {
         // velocity needs to be calculated twice here as TestCollide changes Velocity
-        TestCollide(testSubjects, testRes, Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+        TestCollide(testSubjects, Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
         
         // add pos to velocity
         Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -36,7 +36,7 @@ public class Physics
 
         if (Gravity && !Grounded)
         {
-            Velocity += new Vector2(0.0f,9.8f) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Velocity += new Vector2(0.0f,14f) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
     }
@@ -48,12 +48,9 @@ public class Physics
     }
 
     //tests if colliding with a point, if so, moves accordingly
-    private void TestCollide(Physics[] testSubjects, Vector2 testRes, Vector2 velocity)
+    private void TestCollide(Physics[] testSubjects, Vector2 velocity)
     {
-        int topCollisions = 0;
-        int bottomCollisions = 0;
-        int leftCollisions = 0;
-        int rightCollisions = 0;
+        Grounded = false;
 
         Vector2 p0 = Position + new Vector2(velocity.X, 0f);
         Vector2 p1 = p0 + Size;
@@ -81,16 +78,9 @@ public class Physics
             // if player's rectangle within bounds of test subject's rectangle
             if (p1.X < t0.X || p0.X > t1.X || (p1.Y < t0.Y || p0.Y > t1.Y)) continue;
 
-            if (Velocity.Y > 0f) Velocity.Y = 0;
+            if (Velocity.Y > 0f) {Velocity.Y = 0; Grounded = true; }
             if (Velocity.Y < 0f) Velocity.Y = 0;
         }
 
-    }
-
-    //checks if point is inside the bounds of the physics object
-    private bool Contains(Vector2 pos)
-    {
-        Vector2 opposite = Position + Size;
-        return (pos.X > Position.X && pos.X < opposite.X) && (pos.Y > Position.Y && pos.Y < opposite.Y);
     }
 }

@@ -70,13 +70,9 @@ public class OpenSimplexNoise
         var xi = (int)x;
         return x < xi ? xi - 1 : xi;
     }
+    
 
-    public OpenSimplexNoise()
-        : this(DateTime.Now.Ticks)
-    {
-    }
-
-    private OpenSimplexNoise(long seed)
+    public OpenSimplexNoise(long seed)
     {
         _perm = new byte[256];
         _perm2D = new byte[256];

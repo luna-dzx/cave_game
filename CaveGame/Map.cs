@@ -31,9 +31,9 @@ public class Map
     }
 
 
-    public Map(Texture2D[] blockTextures, int width, int height, float zoom)
+    public Map(Texture2D[] blockTextures, int width, int height, float zoom, long seed)
     {
-        _simplex = new OpenSimplexNoise();
+        _simplex = new OpenSimplexNoise(seed);
         _blocks = new List<Block[]>();//new Block[height, width];
         _textures = blockTextures;
         _width = width;
@@ -128,5 +128,8 @@ public class Map
 
         _generationSize = currentHeight;
     }
+
+    public BlockType GetBlockType(Vector2 coord) => _blocks[(int)coord.X][(int)coord.Y].BlockType;
+    public BlockType GetBlockType(int x, int y) => _blocks[y][x].BlockType;
 
 }

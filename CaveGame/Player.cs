@@ -8,8 +8,9 @@ namespace CaveGame;
 public class Player
 {
     public Physics Physics;
-    private Texture2D _texture;
+    private Texture2D[] _textures;
     public float Speed;
+    public float JumpForce;
 
     private List<Orb> _orbs;
     private Texture2D _orbTexture;
@@ -26,12 +27,13 @@ public class Player
         }
     }
 
-    public Player(GraphicsDevice graphics, Vector2 pos, Vector2 size, Texture2D texture, float speed)
+    public Player(GraphicsDevice graphics, Vector2 pos, Vector2 size, Texture2D[] textures, float speed, float jumpForce)
     {
         Physics = new Physics(pos, size);
         Physics.Gravity = true;
-        _texture = texture;
+        _textures = textures;
         Speed = speed;
+        JumpForce = jumpForce;
         _orbs = new List<Orb>();
         _orbTexture = new Texture2D(graphics, 1, 1);
         _orbTexture.SetData(new[] { Color.CornflowerBlue });
@@ -39,7 +41,7 @@ public class Player
 
     public void Update(GameTime gameTime, Physics[] physicsObjects, int mapWidth)
     {
-        Physics.Update(gameTime, physicsObjects, new Vector2(100, 100), mapWidth);
+        Physics.Update(gameTime, physicsObjects, mapWidth);
     }
 
     public void SpawnOrb(Vector2 clickPos)
@@ -47,9 +49,9 @@ public class Player
         _orbs.Add(new Orb(clickPos - new Vector2(0f,1f), 1f));
     }
 
-    public void Draw(SpriteBatch spriteBatch, Camera cam, GameTime gameTime)
+    public void Draw(SpriteBatch spriteBatch, Camera cam, GameTime gameTime, int frame)
     {
-        cam.Draw(spriteBatch, _texture, Physics.Position, Physics.Size, Color.White);
+        cam.Draw(spriteBatch, _textures[frame], Physics.Position, Physics.Size, Color.White);
         float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         for (int o = 0; o < _orbs.Count; o++)

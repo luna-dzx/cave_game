@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -7,34 +8,33 @@ using Microsoft.Xna.Framework.Input;
 
 namespace CaveGame;
 
-public class TitleScreen : GameState
+public class PauseMenu : GameState
 {
     private Dictionary<string, Button> _buttons;
 
     private (int, int) _screenSize;
 
     // button functions
-    public void ButtonNewGame()
+    public void ButtonResume()
     {
-        Game1.InitializeCaveGame = true;
-        Game1.ResetCaveGame = true;
-        Exit("game");
-    }
-
-    public void ButtonContinue()
-    {
-        Game1.InitializeCaveGame = true;
+        Game1.InitializeCaveGame = false;
         Game1.ResetCaveGame = false;
-
-        byte[] file = File.ReadAllBytes("save-data.balls");
-        BinaryReader handler = new BinaryReader(new MemoryStream(file));
-
-        Game1.LoadedSeed = handler.ReadInt64();
-        Game1.LoadedPosition = new Vector2(handler.ReadSingle(), handler.ReadSingle());
-        
         Exit("game");
     }
-    public void ButtonExit() => Exit();
+
+    public void ButtonSave()
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter handler = new BinaryWriter(stream);
+        
+        handler.Write(Game1.LoadedSeed);
+        handler.Write(Game1.LoadedPosition.X);
+        handler.Write(Game1.LoadedPosition.Y);
+        
+        handler.Close();
+        File.WriteAllBytes("save-data.balls", stream.ToArray());
+    }
+    public void ButtonExit() => Exit("title");
     
 
     public override void LoadContent(GraphicsDevice graphics, ContentManager content)
@@ -44,15 +44,15 @@ public class TitleScreen : GameState
         _buttons = new Dictionary<string, Button>();
         
         _buttons.Add("New Game", new Button(
-            content.Load<Texture2D>("sky"),
-            (0.25f,0.1f,0.5f,0.2f), ButtonNewGame)
+            content.Load<Texture2D>("ballsoodman"),
+            (0.25f,0.1f,0.5f,0.2f), ButtonResume)
         );
         _buttons.Add("Continue", new Button(
-            content.Load<Texture2D>("drainer son or alt daughter"),
-            (0.25f,0.4f,0.5f,0.2f), ButtonContinue)
+            content.Load<Texture2D>("stonetxt"),
+            (0.25f,0.4f,0.5f,0.2f), ButtonSave)
         );
         _buttons.Add("Exit", new Button(
-            content.Load<Texture2D>("stone"),
+            content.Load<Texture2D>("nigel"),
             (0.25f,0.7f,0.5f,0.2f), ButtonExit)
         );
         
