@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace CaveGame;
 
@@ -21,12 +22,18 @@ public class Physics
         Gravity = false;
     }
 
-    public void Update(GameTime gameTime, Physics[] testSubjects, Vector2 testRes)
+    public void Update(GameTime gameTime, Physics[] testSubjects, Vector2 testRes, int mapWidth)
     {
+        // velocity needs to be calculated twice here as TestCollide changes Velocity
         TestCollide(testSubjects, testRes, Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
-            
-        //add pos to velocity
-        Position += Velocity* (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
+        // add pos to velocity
+        Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        
+        // keep inside map
+        if (Position.X < 0f) Position.X = 0f;
+        if (Position.X + Size.X > mapWidth) Position.X = mapWidth - Size.X;
+
         if (Gravity && !Grounded)
         {
             Velocity += new Vector2(0.0f,9.8f) * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -48,64 +55,36 @@ public class Physics
         int leftCollisions = 0;
         int rightCollisions = 0;
 
+        Vector2 p0 = Position + new Vector2(velocity.X, 0f);
+        Vector2 p1 = p0 + Size;
 
-        Vector2 position = Position + velocity;
-
-        //x value testing sweep
-        for (int testStep = 0; testStep < (int) testRes.X; testStep++)
+        foreach (Physics testSubject in testSubjects)
         {
-            //interpolate num of points between pos and opp pos using res
-            float xTestValue = Lerp(position.X, position.X + Size.X, (float)testStep / testRes.X);
-            foreach(Physics testSubject in testSubjects)
-            {
-                if (testSubject.Contains(new Vector2 (xTestValue, position.Y)))
-                {
-                    topCollisions++;
-                }
-                    
-                if (testSubject.Contains(new Vector2(xTestValue, position.Y + Size.Y)))
-                {
-                    bottomCollisions++;
-                }
-            }
+            Vector2 t0 = testSubject.Position;
+            Vector2 t1 = testSubject.Position + testSubject.Size;
+
+            // if player's rectangle within bounds of test subject's rectangle
+            if (p1.X < t0.X || p0.X > t1.X || (p1.Y < t0.Y || p0.Y > t1.Y)) continue;
+            
+            if (Velocity.X > 0f) Velocity.X = 0;
+            if (Velocity.X < 0f) Velocity.X = 0;
+        }
+        
+        p0 = Position + new Vector2(0f, velocity.Y);
+        p1 = p0 + Size;
+        
+        foreach (Physics testSubject in testSubjects)
+        {
+            Vector2 t0 = testSubject.Position;
+            Vector2 t1 = testSubject.Position + testSubject.Size;
+
+            // if player's rectangle within bounds of test subject's rectangle
+            if (p1.X < t0.X || p0.X > t1.X || (p1.Y < t0.Y || p0.Y > t1.Y)) continue;
+
+            if (Velocity.Y > 0f) Velocity.Y = 0;
+            if (Velocity.Y < 0f) Velocity.Y = 0;
         }
 
-
-        //y value (morbius) sweep 
-        for (int testStep = 0; testStep < (int)testRes.Y; testStep++)
-        {
-            //interpolate num of points between pos and opp pos using res
-            float yTestValue = Lerp(position.Y, position.Y + Size.Y, (float)testStep / testRes.Y);
-            foreach (Physics testSubject in testSubjects)
-            {
-                if (testSubject.Contains(new Vector2(position.X, yTestValue)))
-                {
-                    leftCollisions++;
-                }
-
-                if (testSubject.Contains(new Vector2(position.X + Size.X, yTestValue)))
-                {
-                    rightCollisions++;
-                }
-            }
-        }
-
-        if (Velocity.X < 0.0 && leftCollisions > 0)
-        {
-            Velocity.X = 0;
-        }
-        if (Velocity.X > 0.0 && rightCollisions > 0)
-        {
-            Velocity.X = 0;
-        }
-        if (Velocity.Y < 0.0 && topCollisions > 0)
-        {
-            Velocity.Y = 0;
-        }
-        if (Velocity.Y > 0.0 && bottomCollisions > 0)
-        {
-            Velocity.Y = 0;
-        }
     }
 
     //checks if point is inside the bounds of the physics object

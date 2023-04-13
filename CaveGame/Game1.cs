@@ -88,8 +88,11 @@ public class Game1 : Game
             }
         }
 
-        Physics[] surroundings = _map.GetPhysicsInRange(_player.Physics.Position, _player.Physics.Position + _player.Physics.Size);
-        _player.Update(gameTime, surroundings);
+        float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        Vector2 absVelocity = new Vector2(MathF.Abs(_player.Physics.Velocity.X),MathF.Abs(_player.Physics.Velocity.Y)) * seconds;
+
+        Physics[] surroundings = _map.GetPhysicsInRange(_player.Physics.Position - absVelocity, _player.Physics.Position + _player.Physics.Size + absVelocity);
+        _player.Update(gameTime, surroundings, MapWidth);
 
         _cam.Target = _player.Physics.Position + _player.Physics.Size / 2;
         _cam.Update(gameTime, MapWidth);

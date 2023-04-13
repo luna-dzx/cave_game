@@ -37,9 +37,9 @@ public class Player
         _orbTexture.SetData(new[] { Color.CornflowerBlue });
     }
 
-    public void Update(GameTime gameTime, Physics[] physicsObjects)
+    public void Update(GameTime gameTime, Physics[] physicsObjects, int mapWidth)
     {
-        Physics.Update(gameTime, physicsObjects, new Vector2(100, 100));
+        Physics.Update(gameTime, physicsObjects, new Vector2(100, 100), mapWidth);
     }
 
     public void SpawnOrb(Vector2 clickPos)
